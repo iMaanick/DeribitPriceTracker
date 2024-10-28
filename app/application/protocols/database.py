@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from app.application.models.crypto_price import CryptoPrice
+from app.application.models.crypto_price import CryptoPrice, CryptoPriceCreate
 
 
 class UoW(ABC):
@@ -31,3 +31,8 @@ class DatabaseGateway(ABC):
             end_date: Optional[str]
     ) -> list[CryptoPrice]:
         raise NotImplementedError
+
+    @abstractmethod
+    async def insert_price(self, price_data: CryptoPriceCreate) -> None:
+        raise NotImplementedError
+

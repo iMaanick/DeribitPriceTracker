@@ -1,16 +1,26 @@
 import asyncio
+import logging
 
 from app.DeribitClient.client import DeribitClient
+from app.adapters.sqlalchemy_db.gateway import SqlaGateway
+from app.main.di import create_session_maker, new_session
 
 
 async def main():
-    db = None
-    client = DeribitClient(db=db)
-    try:
-        await client.start()
-        await client.start_polling(interval=5)
-    finally:
-        await client.close()
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    )
+    session_maker = create_session_maker()
+    async with session_maker() as async_session:
+
+        db_gateway = SqlaGateway(async_session)
+        client = DeribitClient(db=db_gateway)
+        try:
+            await client.start()
+            await client.start_polling()
+        finally:
+            await client.close()
 
 if __name__ == "__main__":
     asyncio.run(main())

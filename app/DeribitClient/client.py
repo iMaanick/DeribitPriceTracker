@@ -1,14 +1,18 @@
-import aiohttp
 import asyncio
 import logging
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional
+
+import aiohttp
+
+from app.application.models.crypto_price import CryptoPriceCreate
+from app.application.protocols.database import DatabaseGateway
 
 
 class DeribitClient:
     BASE_URL = "https://www.deribit.com/api/v2/public/get_index_price"
 
-    def __init__(self, db: Any):
+    def __init__(self, db: DatabaseGateway):
         self.db = db
         self.session: Optional[aiohttp.ClientSession] = None
 
@@ -19,17 +23,17 @@ class DeribitClient:
         if self.session:
             await self.session.close()
 
-    async def fetch_price(self, currency: str) -> Optional[dict]:
+    async def fetch_price(self, currency: str) -> Optional[CryptoPriceCreate]:
         url = f"{self.BASE_URL}?index_name={currency}"
         try:
             async with self.session.get(url) as response:
                 if response.status == 200:
                     data = await response.json()
-                    return {
-                        "ticker": currency,
-                        "price": data['result']['index_price'],
-                        "timestamp": int(datetime.utcnow().timestamp())
-                    }
+                    return CryptoPriceCreate(
+                        ticker=currency,
+                        price=data['result']['index_price'],
+                        timestamp=int(datetime.utcnow().timestamp())
+                    )
                 else:
                     logging.error(f"Error fetching {currency} price: {response.status}")
                     return None
@@ -37,22 +41,16 @@ class DeribitClient:
             logging.error(f"Exception while fetching {currency} price: {e}")
             return None
 
-    async def save_price_to_db(self, price_data: dict):
-        await self.db.insert_price(
-            ticker=price_data['ticker'],
-            price=price_data['price'],
-            timestamp=price_data['timestamp']
-        )
-
     async def fetch_and_save(self):
         currencies = ["btc_usd", "eth_usd"]
         tasks = [self.fetch_price(currency) for currency in currencies]
-        prices = await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
 
-        for price_data in prices:
-            if price_data:
-                # await self.save_price_to_db(price_data)
-                print(price_data)
+        for result in results:
+            if isinstance(result, CryptoPriceCreate):
+                await self.db.insert_price(result)
+            elif isinstance(result, BaseException):
+                logging.error(f"Error occurred: {result}")
 
     async def start_polling(self, interval: int = 60):
         while True:
