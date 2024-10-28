@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from typing import Optional
+
+from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.models import User
@@ -21,3 +23,11 @@ class SqlaGateway(DatabaseGateway):
         result = await self.session.execute(query)
         crypto_price_list = [CryptoPrice.model_validate(crypto_price) for crypto_price in result.scalars().all()]
         return crypto_price_list
+
+    async def get_latest_price_by_ticker(self, ticker: str) -> Optional[CryptoPrice]:
+        query = select(models.CryptoPrice).where(
+            models.CryptoPrice.ticker == ticker
+        ).order_by(desc(models.CryptoPrice.timestamp))
+        result = await self.session.execute(query)
+        latest_price = result.scalars().first()
+        return latest_price
