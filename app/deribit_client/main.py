@@ -3,7 +3,7 @@ import logging
 
 from app.deribit_client.client import DeribitClient
 from app.adapters.sqlalchemy_db.gateway import SqlaGateway
-from app.main.di import create_session_maker, new_session
+from app.main.di import create_session_maker
 
 
 async def main() -> None:

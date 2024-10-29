@@ -6,11 +6,14 @@ index_router = APIRouter()
 
 
 @dataclass
-class Response:
+class IndexResponse:
     documentation: str
 
 
-@index_router.get("/", response_model=Response)
-async def index() -> Response:
-    return Response(documentation="http://localhost:8000/docs")
+@index_router.get("/", response_model=IndexResponse)
+async def index() -> IndexResponse:
+    """
+    Provides a link to the API documentation.
+    """
+    return IndexResponse(documentation="http://localhost:8000/docs")
 
