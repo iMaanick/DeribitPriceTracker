@@ -6,7 +6,7 @@ from app.adapters.sqlalchemy_db.gateway import SqlaGateway
 from app.main.di import create_session_maker, new_session
 
 
-async def main():
+async def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",

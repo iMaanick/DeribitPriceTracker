@@ -13,15 +13,15 @@ class DeribitClient:
     BASE_URL = "https://www.deribit.com/api/v2/public/get_index_price"
     TICKERS = ["btc_usd", "eth_usd"]
 
-    def __init__(self, db: DatabaseGateway, interval: int = 60):
+    def __init__(self, db: DatabaseGateway, interval: int = 60) -> None:
         self.db = db
         self.interval = interval
         self.session: Optional[aiohttp.ClientSession] = None
 
-    async def start(self):
+    async def start(self) -> None:
         self.session = aiohttp.ClientSession()
 
-    async def close(self):
+    async def close(self) -> None:
         if self.session:
             await self.session.close()
 
@@ -50,7 +50,7 @@ class DeribitClient:
             logging.error(f"Error getting price {ticker}: {e}")
         return None
 
-    async def fetch_and_save(self):
+    async def fetch_and_save(self) -> None:
         tasks = [self.fetch_price(ticker) for ticker in self.TICKERS]
         results = await asyncio.gather(*tasks)
 
@@ -60,7 +60,7 @@ class DeribitClient:
             elif isinstance(result, BaseException):
                 logging.error(f"Error occurred: {result}")
 
-    async def start_polling(self):
+    async def start_polling(self) -> None:
         while True:
             await self.fetch_and_save()
             await asyncio.sleep(self.interval)

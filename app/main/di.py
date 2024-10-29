@@ -15,18 +15,6 @@ from app.application.protocols.database import UoW, DatabaseGateway
 logger = getLogger(__name__)
 
 
-def all_depends(cls: type) -> None:
-    """
-    Adds `Depends()` to the class `__init__` methods, so it can be used
-    a fastapi dependency having own dependencies
-    """
-    init = cls.__init__
-    total_ars = init.__code__.co_kwonlyargcount + init.__code__.co_argcount - 1
-    init.__defaults__ = tuple(
-        Depends() for _ in range(total_ars)
-    )
-
-
 async def new_gateway(
         session: AsyncSession = Depends(Stub(AsyncSession))
 ) -> AsyncGenerator[SqlaGateway, None]:

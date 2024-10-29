@@ -25,7 +25,9 @@ class SqlaGateway(DatabaseGateway):
         ).order_by(desc(models.CryptoPrice.timestamp))
         result = await self.session.execute(query)
         latest_price = result.scalars().first()
-        return latest_price
+        if latest_price:
+            return CryptoPrice.model_validate(latest_price)
+        return None
 
     async def get_prices_by_date(
             self, ticker: str,
