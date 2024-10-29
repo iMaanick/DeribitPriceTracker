@@ -1,5 +1,6 @@
 __all__ = [
-    "User",
+    "CryptoPrice",
+    "CryptoPriceCreate"
 ]
 
-from .user import User
+from .crypto_price import CryptoPrice, CryptoPriceCreate
