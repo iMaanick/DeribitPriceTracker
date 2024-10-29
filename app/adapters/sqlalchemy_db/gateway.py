@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from sqlalchemy import select, desc
@@ -28,17 +29,17 @@ class SqlaGateway(DatabaseGateway):
 
     async def get_prices_by_date(
             self, ticker: str,
-            start_date: Optional[int],
-            end_date: Optional[int]
+            start_date: Optional[datetime.datetime],
+            end_date: Optional[datetime.datetime]
     ) -> list[CryptoPrice]:
 
         query = select(models.CryptoPrice).where(models.CryptoPrice.ticker == ticker)
 
         if start_date:
-            query = query.where(models.CryptoPrice.timestamp >= start_date)
+            query = query.where(models.CryptoPrice.timestamp >= int(start_date.timestamp()))
 
         if end_date:
-            query = query.where(models.CryptoPrice.timestamp <= end_date)
+            query = query.where(models.CryptoPrice.timestamp <= int(end_date.timestamp()))
 
         result = await self.session.execute(query)
         crypto_price_list = [CryptoPrice.model_validate(crypto_price) for crypto_price in result.scalars().all()]

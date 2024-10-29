@@ -1,3 +1,4 @@
+import datetime
 from typing import Annotated, Optional
 
 from fastapi import Depends
@@ -25,8 +26,8 @@ async def get_latest_price(
 async def get_prices_with_date_filter(
         database: DatabaseGateway,
         ticker: str,
-        start_date: Optional[int],
-        end_date: Optional[int]
-) -> Optional[CryptoPrice]:
-    crypto_price_list = await database.get_prices_by_date(ticker, start_date,end_date)
+        start_date: Optional[datetime.datetime],
+        end_date: Optional[datetime.datetime]
+) -> list[CryptoPrice]:
+    crypto_price_list = await database.get_prices_by_date(ticker, start_date, end_date)
     return crypto_price_list

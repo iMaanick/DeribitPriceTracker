@@ -32,7 +32,7 @@ class DeribitClient:
                     return CryptoPriceCreate(
                         ticker=currency,
                         price=data['result']['index_price'],
-                        timestamp=int(datetime.utcnow().timestamp())
+                        timestamp=int(datetime.now().timestamp())
                     )
                 else:
                     logging.error(f"Error fetching {currency} price: {response.status}")

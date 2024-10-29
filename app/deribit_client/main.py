@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from app.DeribitClient.client import DeribitClient
+from app.deribit_client.client import DeribitClient
 from app.adapters.sqlalchemy_db.gateway import SqlaGateway
 from app.main.di import create_session_maker, new_session
 

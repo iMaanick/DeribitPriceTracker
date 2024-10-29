@@ -1,3 +1,4 @@
+import datetime
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -27,8 +28,8 @@ class DatabaseGateway(ABC):
     @abstractmethod
     async def get_prices_by_date(
             self, ticker: str,
-            start_date: Optional[str],
-            end_date: Optional[str]
+            start_date: Optional[datetime.datetime],
+            end_date: Optional[datetime.datetime]
     ) -> list[CryptoPrice]:
         raise NotImplementedError
 
