@@ -1,7 +1,5 @@
 import datetime
-from typing import Annotated, Optional
-
-from fastapi import Depends
+from typing import Optional
 
 from app.application.models.crypto_price import CryptoPrice
 from app.application.protocols.database import DatabaseGateway
